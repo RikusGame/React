@@ -5,17 +5,16 @@ import { Routes, Route } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import Dashboard from "../pages/admin/Dashboard";
 import Usuarios from "../pages/admin/Usuarios";
-import Productos from "../pages/admin/Productos";
-import Ventas from "../pages/admin/Ventas";
+import Radiotaxis from "../pages/admin/Radiotaxis";
+import Ajustes from "../pages/admin/Ajustes";
 
 const AdminRoutes = () => (
   <Routes>
     <Route path="/" element={<AdminLayout />}>
       <Route index element={<Dashboard />} />
       <Route path="usuarios" element={<Usuarios />} />
-      <Route path="productos" element={<Productos />} />
-      <Route path="ventas" element={<Ventas />} />
-      <Route path="compras" element={<Ventas />} /> {/* Assuming 'Compras' is similar to 'Ventas' */} 
+      <Route path="radiotaxis" element={<Radiotaxis />} />
+      <Route path="ajustes" element={<Ajustes />} />
     </Route>
   </Routes>
 );

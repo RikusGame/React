@@ -1,93 +1,91 @@
-import React, { useState } from "react";
+// AdminLayout.jsx
+import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import {
-  Box, CssBaseline, Drawer, Toolbar, List,
-  ListItem, ListItemIcon, ListItemText
-} from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import PeopleIcon from "@mui/icons-material/People";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-
-const drawerWidth = 220;
+import { Box, CssBaseline, Toolbar } from "@mui/material";
+import DashboardIcon   from "@mui/icons-material/Dashboard";
+import PeopleIcon      from "@mui/icons-material/People";
+import LocalTaxiIcon   from "@mui/icons-material/LocalTaxi";
+import Navbar          from "../components/Navbar";
+import Footer          from "../components/Footer";
+import Sidebar         from "../components/Sidebar";
+import LogoImg         from "../assets/logo.png";
 
 const menuItems = [
-  { path: "/admin", label: "Inicio", icon: <DashboardIcon /> },
-  { path: "/admin/usuarios", label: "Usuarios", icon: <PeopleIcon /> },
-  { path: "/admin/productos", label: "Productos", icon: <InventoryIcon /> },
-  { path: "/admin/ventas", label: "Ventas", icon: <ShoppingCartIcon /> },
-  { path: "/admin/ventas", label: "Ventas", icon: <ShoppingCartIcon /> }, //Aqui asumiendo que 'Compras' es similar a 'Ventas'
-  { path: "/admin/ventas", label: "Ventas", icon: <ShoppingCartIcon /> },
-  { path: "/admin/ventas", label: "Ventas", icon: <ShoppingCartIcon /> },//No olvidar que en routes.js se ha cambiado 'Compras' por 'Ventas' para que coincida con el componente Ventas.jsx
-    
-    
-  
+  { path: "/admin",          label: "Inicio",     icon: <DashboardIcon /> },
+  { path: "/admin/usuarios", label: "Usuarios",   icon: <PeopleIcon /> },
+  { path: "/admin/radiotaxis", label: "Radiotaxis", icon: <LocalTaxiIcon /> },
+  { path: "/admin/ajustes", label: "Ajustes", icon: <LocalTaxiIcon /> },
+
+  // ...repítelos si necesitas muchos
 ];
 
 const AdminLayout = () => {
   const location = useLocation();
-  const [open, setOpen] = useState(false);
-  const handleDrawerToggle = () => setOpen(!open);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "#f4f6f8" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",      // altura total de la ventana
+        overflow: "hidden",    // no permitimos scroll aquí
+      }}
+    >
       <CssBaseline />
-      {/* Navbar profesional */}
-      <Navbar onMenuClick={handleDrawerToggle} />
-      <Box sx={{ display: "flex", flex: 1, pt: 8 }}>
-        {/* Sidebar */}
-        <Drawer
-          variant="permanent"
+
+      {/* Navbar fijo arriba */}
+      <Box sx={{ flexShrink: 0 }}>
+        <Navbar />
+      </Box>
+
+      {/* Contenedor central: sidebar + contenido */}
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1,
+          overflow: "hidden",    // controlamos scroll en hijos
+        }}
+      >
+        {/* Sidebar con scroll propio */}
+        <Sidebar
+          logo={
+            <Link to="/admin">
+              <img src={LogoImg} alt="Logo" style={{ width: 120, cursor: "pointer" }} />
+            </Link>
+          }
+          menuItems={menuItems}
+        />
+
+        {/* Main con scroll propio */}
+        <Box
+          component="main"
           sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box",
-              background: "#23234f",
-              color: "#fff"
-            },
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
           }}
         >
+          {/* Offset para que no quede debajo de la Navbar */}
           <Toolbar />
-          <Box sx={{ overflow: "auto" }}>
-            <List>
-              {menuItems.map(item => (
-                <ListItem
-                  button
-                  key={item.path}
-                  component={Link}
-                  to={item.path}
-                  selected={location.pathname === item.path}
-                  sx={{
-                    mb: 1,
-                    borderRadius: 2,
-                    "&.Mui-selected": {
-                      background: "linear-gradient(90deg, #1e3c72 60%, #2a5298 100%)",
-                      color: "#fff",
-                      boxShadow: 2,
-                    },
-                    color: "#fff",
-                    transition: "background 0.3s",
-                  }}
-                >
-                  <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItem>
-              ))}
-            </List>
+
+          {/* Aquí va el scroll de tu página */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflowY: "auto",
+              p: 3,
+            }}
+          >
+            <Outlet />
           </Box>
-        </Drawer>
-        {/* Contenido principal */}
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          <Outlet />
+
+          {/* Footer fijo abajo */}
+          <Box sx={{ flexShrink: 0 }}>
+            <Footer />
+          </Box>
         </Box>
       </Box>
-      {/* Footer profesional */}
-      <Footer />
     </Box>
   );
 };
