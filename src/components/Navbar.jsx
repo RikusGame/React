@@ -33,3 +33,9 @@ const Navbar = ({ onMenuClick }) => (
 );
 
 export default Navbar;
+
+/* Ejemplo de uso:
+<Box sx={{ flexShrink: 0 }}>
+  <Navbar />
+</Box>
+*/

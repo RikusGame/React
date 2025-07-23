@@ -52,3 +52,9 @@ const Footer = () => (
 );
 
 export default Footer;
+
+/*Ejemplo de uso:
+<Box sx={{ flexShrink: 0 }}>
+  <Footer />
+</Box>
+*/

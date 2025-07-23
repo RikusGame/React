@@ -15,8 +15,6 @@ const menuItems = [
   { path: "/admin/usuarios", label: "Usuarios",   icon: <PeopleIcon /> },
   { path: "/admin/radiotaxis", label: "Radiotaxis", icon: <LocalTaxiIcon /> },
   { path: "/admin/ajustes", label: "Ajustes", icon: <LocalTaxiIcon /> },
-
-  // ...repítelos si necesitas muchos
 ];
 
 const AdminLayout = () => {
@@ -48,11 +46,11 @@ const AdminLayout = () => {
       >
         {/* Sidebar con scroll propio */}
         <Sidebar
-          logo={
-            <Link to="/admin">
-              <img src={LogoImg} alt="Logo" style={{ width: 120, cursor: "pointer" }} />
-            </Link>
-          }
+        logo={
+          <Link to="/admin">
+            <img src={LogoImg} alt="Logo" />
+          </Link>
+        }
           menuItems={menuItems}
         />
 

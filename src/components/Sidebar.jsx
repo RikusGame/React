@@ -1,31 +1,30 @@
-// Sidebar.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Box, Toolbar, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 
-const drawerWidth = 220;
+const drawerWidthExpanded = 220;
+const drawerWidthCollapsed = 60;
 
-/**
- * Sidebar con scroll independiente y encabezado fijo.
- * - El contenedor <Box> principal tiene overflowY y overscrollBehavior para aislar scroll.
- * - El header (Toolbar + logo) queda sticky arriba.
- */
 const Sidebar = ({ logo, menuItems }) => {
   const location = useLocation();
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <Box
       component="nav"
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
       sx={{
-        width: drawerWidth,
+        width: expanded ? drawerWidthExpanded : drawerWidthCollapsed,
         height: "100vh",
         background: "#23234f",
         color: "#fff",
         display: "flex",
         flexDirection: "column",
         boxShadow: 3,
-        overflowY: "auto",         // Scroll en todo el sidebar
-        overscrollBehavior: "contain", // Evita propagar al contenido principal
+        overflowY: "auto",
+        overscrollBehavior: "contain",
+        transition: "width 0.3s ease-in-out",
       }}
     >
       {/* Header sticky: Toolbar + logo */}
@@ -35,41 +34,73 @@ const Sidebar = ({ logo, menuItems }) => {
           top: 0,
           zIndex: 1,
           background: "#23234f",
-          // No desplazable independiente
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          p: expanded ? 2 : 1,
+          transition: "padding 0.3s",
         }}
       >
         <Toolbar />
         {logo && (
-          <Box sx={{ textAlign: "center", p: 2 }}>
+          <Box
+            sx={{
+              width: expanded ? "120px" : "35px",
+              transition: "width 0.3s ease-in-out",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              "& img": {
+                width: "100%",
+                cursor: "pointer",
+                transition: "width 0.3s ease-in-out",
+              },
+            }}
+          >
             {logo}
           </Box>
         )}
       </Box>
 
-      {/* Lista de menú (desplazable junto al contenedor) */}
+      {/* Lista del menú */}
       <List sx={{ p: 0 }}>
-        {menuItems.map((item) => (
-          <ListItem
-            button
-            key={item.path}
-            component={Link}
-            to={item.path}
-            selected={location.pathname === item.path}
-            sx={{
-              mb: 1,
-              borderRadius: 2,
-              color: "#fff",
-              "&.Mui-selected": {
-                background: "linear-gradient(90deg, #1e3c72 60%, #2a5298 100%)",
-                boxShadow: 2,
-              },
-              transition: "background 0.3s",
-            }}
-          >
-            <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
-          </ListItem>
-        ))}
+{menuItems.map((item) => {
+  const isActive = location.pathname.startsWith(item.path);
+  return (
+    <ListItem
+      button
+      key={item.path}
+      component={Link}
+      to={item.path}
+      selected={isActive}
+      sx={{
+        mb: 1,
+        borderRadius: 2,
+        color: "#fff",
+        backgroundColor: isActive ? "rgba(255, 255, 255, 0.1)" : "transparent",
+        "&:hover": {
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+        },
+        transition: "background 0.3s",
+        justifyContent: expanded ? "flex-start" : "center",
+        boxShadow: isActive ? 2 : undefined,
+        fontWeight: isActive ? "bold" : undefined,
+      }}
+    >
+      <ListItemIcon
+        sx={{
+          justifyContent: "center",
+          color: isActive ? "#90caf9" : "#fff", // <-- aquí cambia el color del ícono si está activo
+          transition: "color 0.3s",
+        }}
+      >
+        {item.icon}
+      </ListItemIcon>
+      {expanded && <ListItemText primary={item.label} />}
+    </ListItem>
+  );
+})}
+
       </List>
     </Box>
   );
@@ -77,10 +108,20 @@ const Sidebar = ({ logo, menuItems }) => {
 
 export default Sidebar;
 
-
-
-
-
 /*Ejemplo de uso:
+const menuItems = [
+  { path: "/admin",          label: "Inicio",     icon: <DashboardIcon /> },
+  { path: "/admin/usuarios", label: "Usuarios",   icon: <PeopleIcon /> },
+  { path: "/admin/radiotaxis", label: "Radiotaxis", icon: <LocalTaxiIcon /> },
+  { path: "/admin/ajustes", label: "Ajustes", icon: <LocalTaxiIcon /> },
+];
 
+<Sidebar
+  logo={
+    <Link to="/admin">
+      <img src={LogoImg} alt="Logo" style={{ width: 120, cursor: "pointer" }} />
+    </Link>
+  }
+  menuItems={menuItems}
+/>
 */
