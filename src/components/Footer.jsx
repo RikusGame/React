@@ -7,8 +7,8 @@ const Footer = () => (
     sx={{
       background: "#1e3c72",
       color: "#fff",
-      py: 2,
-      px: 4,
+      py: 1,
+      px: 0,
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
