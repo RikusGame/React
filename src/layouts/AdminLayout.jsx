@@ -11,7 +11,7 @@ import Sidebar         from "../components/Sidebar";
 import LogoImg         from "../assets/logo.png";
 
 const menuItems = [
-  { path: "/admin",          label: "Inicio",     icon: <DashboardIcon /> },
+  { path: "/admin/dashboard", label: "Inicio", icon: <DashboardIcon /> },
   { path: "/admin/usuarios", label: "Usuarios",   icon: <PeopleIcon /> },
   { path: "/admin/radiotaxis", label: "Radiotaxis", icon: <LocalTaxiIcon /> },
   { path: "/admin/ajustes", label: "Ajustes", icon: <LocalTaxiIcon /> },
@@ -79,7 +79,15 @@ const AdminLayout = () => {
           </Box>
 
           {/* Footer fijo abajo */}
-          <Box sx={{ flexShrink: 0 }}>
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 10,
+            }}
+          >
             <Footer />
           </Box>
         </Box>

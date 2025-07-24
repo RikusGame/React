@@ -64,43 +64,42 @@ const Sidebar = ({ logo, menuItems }) => {
 
       {/* Lista del menú */}
       <List sx={{ p: 0 }}>
-{menuItems.map((item) => {
-  const isActive = location.pathname.startsWith(item.path);
-  return (
-    <ListItem
-      button
-      key={item.path}
-      component={Link}
-      to={item.path}
-      selected={isActive}
-      sx={{
-        mb: 1,
-        borderRadius: 2,
-        color: "#fff",
-        backgroundColor: isActive ? "rgba(255, 255, 255, 0.1)" : "transparent",
-        "&:hover": {
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-        },
-        transition: "background 0.3s",
-        justifyContent: expanded ? "flex-start" : "center",
-        boxShadow: isActive ? 2 : undefined,
-        fontWeight: isActive ? "bold" : undefined,
-      }}
-    >
-      <ListItemIcon
-        sx={{
-          justifyContent: "center",
-          color: isActive ? "#90caf9" : "#fff", // <-- aquí cambia el color del ícono si está activo
-          transition: "color 0.3s",
-        }}
-      >
-        {item.icon}
-      </ListItemIcon>
-      {expanded && <ListItemText primary={item.label} />}
-    </ListItem>
-  );
-})}
-
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <ListItem
+              button
+              key={item.path}
+              component={Link}
+              to={item.path}
+              selected={isActive}
+              sx={{
+                mb: 1,
+                borderRadius: 2,
+                color: "#fff",
+                backgroundColor: isActive ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+                transition: "background 0.3s",
+                justifyContent: expanded ? "flex-start" : "center",
+                boxShadow: isActive ? 2 : undefined,
+                fontWeight: isActive ? "bold" : undefined,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: isActive ? "#90caf9" : "#fff", // <-- aquí cambia el color del ícono si está activo
+                  transition: "color 0.3s",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              {expanded && <ListItemText primary={item.label} />}
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );
