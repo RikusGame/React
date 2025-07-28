@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Paper, Grid, Card, CardMedia, CardContent, CardActions } from "@mui/material";
-import BotonCompra from '../../components/BotonCompra'; // Asegúrate que la ruta sea correcta (dos puntos)
+import BotonCompra from '../../components/BotonCompra';
 
 const productos = [
   {
@@ -17,7 +17,7 @@ const productos = [
     descripcion: "Vaqueros duraderos y con estilo para cualquier ocasión.",
     imagen: "/imagen2.jpg",
     precio: 49.99,
-    stock: 0, // Sin stock para mostrar un botón deshabilitado
+    stock: 0,
   },
   {
     id: 'p3',
@@ -47,7 +47,7 @@ const productos = [
     id: 'p6',
     nombre: "Gorra de Béisbol",
     descripcion: "Clásica gorra con ajuste cómodo y diseño atemporal.",
-    imagen: "/imagen6.jpg",
+    imagen: "https://images.unsplash.com/photo-1689308271305-58e75832289b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     precio: 15.50,
     stock: 20,
   },
@@ -55,7 +55,7 @@ const productos = [
     id: 'p7',
     nombre: "Reloj Inteligente",
     descripcion: "Monitoriza tu actividad y recibe notificaciones.",
-    imagen: "/imagen7.jpg",
+    imagen: "https://inkscape.app/wp-content/uploads/imagen-vectorial.webp",
     precio: 120.00,
     stock: 3,
   },
@@ -79,15 +79,12 @@ const productos = [
 
 const Productos = () => {
   const handleAddToCart = (event, product) => {
-    // Si el botón está deshabilitado por stock, esta función no debería ejecutarse
-    // gracias a la lógica en BotonCompra, pero es bueno tener una doble verificación.
     if (product.stock === 0) {
       console.log(`Intento de añadir producto agotado: ${product.nombre}`);
-      return; // No hace nada si está agotado
+      return;
     }
     console.log(`Añadiendo al carrito:`, product);
     alert(`"${product.nombre}" ha sido añadido al carrito por $${product.precio.toFixed(2)}.`);
-    // Aquí iría tu lógica real de carrito de compras.
   };
 
   return (
@@ -123,14 +120,15 @@ const Productos = () => {
                   product={prod}
                   onClick={handleAddToCart}
                   variant="contained"
-                  // Condicionalmente aplica el color 'error' (rojo) si está agotado
-                  // De lo contrario, usa 'primary' (azul por defecto)
-                  color={prod.stock === 0 ? 'error' : 'primary'}
+                  // Puedes usar 'color' para los colores predefinidos de MUI (primary, secondary, error)
+                  // o 'buttonColor' para colores personalizados.
+                  // Aquí un ejemplo:
+                  color={prod.stock === 0 ? 'error' : 'primary'} // Usa el color 'error' de MUI para agotados
+                  // O puedes definir un color personalizado directamente:
+                  // buttonColor={prod.stock === 0 ? '#D32F2F' : '#4CAF50'} // Rojo para agotado, Verde para disponible
                   size="medium"
-                  // Deshabilita el botón si no hay stock
                   disabled={prod.stock === 0}
                 >
-                  {/* Cambia el texto del botón basado en el stock */}
                   {prod.stock > 0 ? 'Añadir al Carrito' : 'Agotado'}
                 </BotonCompra>
               </CardActions>
