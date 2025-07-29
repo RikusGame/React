@@ -3,10 +3,16 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
-import Dashboard from "../pages/admin/Dashboard";
-import Usuarios from "../pages/admin/Usuarios";
+import Dashboard from "../pages/admin/dashboard/Dashboard";
+import Usuarios from "../pages/admin/usuarios/Usuarios";
 import Radiotaxis from "../pages/admin/radiotaxis/Radiotaxis";
-import Ajustes from "../pages/admin/Ajustes";
+import Ajustes from "../pages/admin/ajustes/Ajustes";
+import Landing from "../pages/admin/landing/Landing";
+import Onboarding from "../pages/admin/onboarding/Onboarding";
+import Banners from "../pages/admin/banner/Banners";
+import Personalizar from "../pages/admin/personalizar/Personalizar";
+import Perfil from "../pages/admin/perfil/Perfil";
+import Documentos from "../pages/admin/docs/docs"; // Asegúrate de que esta ruta sea correcta
 
 const AdminRoutes = () => (
   <Routes>
@@ -16,6 +22,12 @@ const AdminRoutes = () => (
       <Route path="usuarios" element={<Usuarios />} />
       <Route path="radiotaxis" element={<Radiotaxis />} />
       <Route path="ajustes" element={<Ajustes />} />
+      <Route path="landing" element={<Landing />} />
+      <Route path="onboarding" element={<Onboarding />} />
+      <Route path="banners" element={<Banners />} />
+      <Route path="personalizar" element={<Personalizar />} />
+      <Route path="perfil" element={<Perfil />} />
+      <Route path="documentos" element={<Documentos />} />
     </Route>
   </Routes>
 );

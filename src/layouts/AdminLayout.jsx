@@ -5,17 +5,31 @@ import { Box, CssBaseline, Toolbar } from "@mui/material";
 import DashboardIcon   from "@mui/icons-material/Dashboard";
 import PeopleIcon      from "@mui/icons-material/People";
 import LocalTaxiIcon   from "@mui/icons-material/LocalTaxi";
+import SettingsIcon from "@mui/icons-material/Settings";
+import WebIcon from "@mui/icons-material/Web";
+import SchoolIcon from "@mui/icons-material/School";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import BuildIcon from "@mui/icons-material/Build";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Navbar          from "../components/Navbar";
 import Footer          from "../components/Footer";
 import Sidebar         from "../components/Sidebar";
 import LogoImg         from "../assets/logo.png";
+import ArticleIcon from "@mui/icons-material/Article";
 
 const menuItems = [
   { path: "/admin/dashboard", label: "Inicio", icon: <DashboardIcon /> },
-  { path: "/admin/usuarios", label: "Usuarios",   icon: <PeopleIcon /> },
+  { path: "/admin/usuarios", label: "Usuarios", icon: <PeopleIcon /> },
   { path: "/admin/radiotaxis", label: "Radiotaxis", icon: <LocalTaxiIcon /> },
-  { path: "/admin/ajustes", label: "Ajustes", icon: <LocalTaxiIcon /> },
+  { path: "/admin/ajustes", label: "Ajustes", icon: <SettingsIcon /> },
+  { path: "/admin/landing", label: "Landing", icon: <WebIcon /> },
+  { path: "/admin/onboarding", label: "Onboarding", icon: <SchoolIcon /> },
+  { path: "/admin/banners", label: "Banners", icon: <PhotoLibraryIcon /> },
+  { path: "/admin/personalizar", label: "Personalizar", icon: <BuildIcon /> },
+  { path: "/admin/perfil", label: "Perfil", icon: <AccountCircleIcon /> },
+  { path: "/admin/documentos", label: "Documentos", icon: <ArticleIcon /> },
 ];
+
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -79,17 +93,7 @@ const AdminLayout = () => {
           </Box>
 
           {/* Footer fijo abajo */}
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 10,
-            }}
-          >
-            <Footer />
-          </Box>
+          <Footer />
         </Box>
       </Box>
     </Box>

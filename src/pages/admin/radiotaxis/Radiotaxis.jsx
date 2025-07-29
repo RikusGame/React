@@ -1,9 +1,12 @@
+// src/pages/admin/radiotaxis/Radiotaxis.jsx
 import { useState } from "react";
-import { Button, Stack } from "@mui/material";
-import SearchableTable from "../../../shared/components/tablas/tabla";
+import { Typography, Paper, Stack } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Tabla2 } from "../../../shared/components/tablas/tabla";
 import DetalleModal from "./components/modalGenerico";
 import { getRadiotaxisColumns } from "./data/radiotaxisColumns";
 import { radiotaxisRows } from "./data/radiotaxisRows";
+import IconActionButton from "../../../shared/components/botones/Botones";
 
 const Radiotaxis = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -16,23 +19,51 @@ const Radiotaxis = () => {
 
   const columns = getRadiotaxisColumns((params) => (
     <Stack direction="row" spacing={1}>
-      <Button size="small" variant="contained" onClick={() => handleVer(params.row)}>Ver</Button>
+      <IconActionButton
+        icon={<VisibilityIcon fontSize="small" />}
+        color="primary"
+        onClick={(e) => {
+          e.stopPropagation();      // ← evita doble disparo
+          handleVer(params.row);
+        }}
+      />
     </Stack>
   ));
 
   return (
     <>
-      <SearchableTable
-        title="Radiotaxis Registrados"
-        description="Aquí puedes gestionar los radiotaxis que han enviado sus documentos."
-        rows={radiotaxisRows}
-        columns={columns}
-        height={400}
-        pageSize={3}
-        rowsPerPageOptions={[5, 10, 20]}
-        onRowDoubleClick={(params) => handleVer(params.row)}
+        <Paper
+        elevation={6}
+        sx={{
+          p: 3,
+          borderRadius: 3,
+          backgroundColor: "#f9f9f9",
+          mx: "auto",
+          maxWidth: 1200,
+          border: "0.1px solid rgba(146, 144, 144, 1)",
+        }}
+        >
+        <Typography variant="h4" gutterBottom fontWeight="bold">
+          Radiotaxis Registrados
+        </Typography>
+        <Typography color="text.secondary" gutterBottom>
+          Aquí puedes gestionar los radiotaxis que han enviado sus documentos.
+        </Typography>
+
+        <Tabla2
+          rows={radiotaxisRows}
+          columns={columns}
+          height="51vh"
+          pageSize={3}
+          onRowClick={(params) => handleVer(params.row)}
+        />
+      </Paper>
+
+      <DetalleModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        rowData={selectedRow}
       />
-      <DetalleModal open={openModal} onClose={() => setOpenModal(false)} rowData={selectedRow} />
     </>
   );
 };
