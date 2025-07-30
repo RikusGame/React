@@ -289,6 +289,7 @@ export const Tabla2 = ({
         <DataGrid
           rows={filteredRows}
           columns={columns}
+          getRowId={(row) => row.firebaseId}
           pagination
           paginationModel={{ pageSize: pageSizeState, page: 0 }}
           onPaginationModelChange={(m) => setPageSizeState(m.pageSize)}

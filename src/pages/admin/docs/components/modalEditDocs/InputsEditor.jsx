@@ -1,4 +1,4 @@
-// src/pages/admin/docs/components/modalCrearDocs/InputsEditor.jsx
+// src/pages/admin/docs/components/modalEditDocs/InputsEditor.jsx
 import { Stack, TextField, IconButton, Button, Divider, Chip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";

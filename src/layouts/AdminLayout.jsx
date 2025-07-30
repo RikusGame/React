@@ -32,7 +32,7 @@ const menuItems = [
 
 
 const AdminLayout = () => {
-  const location = useLocation();
+  // const location = useLocation();
 
   return (
     <Box

@@ -1,4 +1,4 @@
-// src/pages/admin/docs/components/modalCrearDocs/FileSectionsEditor.jsx
+// src/pages/admin/docs/components/modalEditDocs/FileSectionsEditor.jsx
 import {
   Stack, TextField, IconButton, Button, Divider, Chip
 } from "@mui/material";
