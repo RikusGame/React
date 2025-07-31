@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Typography, Paper, Grid, Card, CardMedia, CardContent, CardActions } from "@mui/material";
 import BotonCompra from '../../components/BotonCompra';
 

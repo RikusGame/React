@@ -17,6 +17,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StoreIcon from "@mui/icons-material/Store"; // Asegúrate de importar todos los iconos que necesites
+import { BatteryStdRounded } from "@mui/icons-material";
 
 const drawerWidth = 220;
 const closedDrawerWidth = 60; // Ancho cuando el sidebar está colapsado
@@ -26,7 +27,9 @@ const menuItems = [
   { path: "/admin/usuarios", label: "Usuarios", icon: <PeopleIcon /> },
   { path: "/admin/productos", label: "Productos", icon: <InventoryIcon /> },
   { path: "/admin/ventas", label: "Ventas", icon: <ShoppingCartIcon /> },
-  { path: "/admin/compras", label: "Compras", icon: <StoreIcon /> }, // Asegúrate de que este path coincida con tus rutas
+  { path: "/admin/compras", label: "Compras", icon: <StoreIcon /> }, 
+  { path: "/admin/basedatos", label: "Base De Datos", icon: <BatteryStdRounded /> },
+  // Asegúrate de que este path coincida con tus rutas
 ];
 
 const Sidebar = ({ open, handleDrawerToggle }) => {
