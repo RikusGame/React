@@ -1,8 +1,9 @@
 // src/pages/admin/docs/components/DocumentoModal.jsx
+import { useState, useEffect } from "react";
 import { Button, Stack } from "@mui/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import { useState } from "react";
-import { useEffect } from "react";
+
+import useMultipleClickBlock from "../../../../../shared/utils/MultipleClick.jsx";
 
 import {
   Modal1,
@@ -19,36 +20,45 @@ import useInputs          from "./useInputs.js";
 import useFileSections    from "./useFileSections.js";
 
 const DocumentoModal = ({ open, onClose, onSave }) => {
+  /* ── estados locales ───────────────────────── */
   const [nombreCaja, setNombreCaja] = useState("");
-  const [titulo, setTitulo]         = useState("");
-  const [subtitulo, setSubtitulo]   = useState("");
+  const [titulo,      setTitulo]     = useState("");
+  const [subtitulo,   setSubtitulo]  = useState("");
 
   const { inputs, agregarInput, eliminarInput, actualizarInput } = useInputs();
   const { fileSections, agregarFile, eliminarFile, actualizarFile } = useFileSections();
 
-  useEffect(() => {
-    if (!open) {
-      setNombreCaja("");
-      setTitulo("");
-      setSubtitulo("");
-
-      inputs.forEach((_, i) => eliminarInput(i));
-      fileSections.forEach((_, i) => eliminarFile(i));
-    }
-  }, [open]);
-
-  const handleGuardar = () => {
-    onSave({
+  /* ── bloquea clics múltiples sobre “Guardar” ── */
+  const {
+    execute : handleGuardar,
+    loading : guardando,
+    reset   : desbloquear,
+  } = useMultipleClickBlock(async () => {
+    await onSave({
       title: nombreCaja,
       screenTitle: titulo,
       screenSubtitle: subtitulo,
       inputs,
       fileSections,
     });
-  };
+    onClose();                         // cierra cuando terminó
+  });
 
+  /* Limpia estado cuando se cierra el modal */
+  useEffect(() => {
+    if (!open) {
+      setNombreCaja("");
+      setTitulo("");
+      setSubtitulo("");
+      inputs.forEach((_, i) => eliminarInput(i));
+      fileSections.forEach((_, i) => eliminarFile(i));
+      desbloquear();                   // libera el lock
+    }
+  }, [open]);
+
+  /* ── UI ─────────────────────────────────────── */
   return (
-    <Modal1 open={open} onClose={onClose} maxWidth="lg" fullWidth aria-labelledby="nuevo-documento-title">
+    <Modal1 open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <ModalHeader
         title="Nuevo documento"
         icon={<DescriptionRoundedIcon />}
@@ -59,9 +69,9 @@ const DocumentoModal = ({ open, onClose, onSave }) => {
         left={
           <Stack spacing={2}>
             <DatosGenerales
-              nombreCaja={nombreCaja}      setNombreCaja={setNombreCaja}
-              titulo={titulo}              setTitulo={setTitulo}
-              subtitulo={subtitulo}        setSubtitulo={setSubtitulo}
+              nombreCaja={nombreCaja} setNombreCaja={setNombreCaja}
+              titulo={titulo}         setTitulo={setTitulo}
+              subtitulo={subtitulo}   setSubtitulo={setSubtitulo}
             />
 
             <InputsEditor
@@ -91,9 +101,17 @@ const DocumentoModal = ({ open, onClose, onSave }) => {
       />
 
       <AppDialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button variant="contained" color="primary" onClick={handleGuardar}>
-          Guardar
+        <Button onClick={onClose} disabled={guardando}>
+          Cancelar
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleGuardar}
+          disabled={guardando}
+        >
+          {guardando ? "Guardando…" : "Guardar"}
         </Button>
       </AppDialogActions>
     </Modal1>

@@ -73,6 +73,7 @@ const Tabla1 = ({
         <DataGrid
           rows={filteredRows}
           columns={columns}
+          getRowId={(row) => row.id}
           pagination
           paginationModel={{ pageSize: pageSizeState, page: 0 }}
           onPaginationModelChange={(model) => setPageSizeState(model.pageSize)}
@@ -114,6 +115,10 @@ export const Tabla2 = ({
 }) => {
   const [searchText, setSearchText] = useState("");
   const [pageSizeState, setPageSizeState] = useState(pageSize);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: pageSize,   // valor inicial que recibís por props
+  });
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) =>
@@ -286,18 +291,18 @@ export const Tabla2 = ({
 
       {/* DataGrid */}
       <Box sx={{ height }}>
-        <DataGrid
-          rows={filteredRows}
-          columns={columns}
-          getRowId={(row) => row.firebaseId}
-          pagination
-          paginationModel={{ pageSize: pageSizeState, page: 0 }}
-          onPaginationModelChange={(m) => setPageSizeState(m.pageSize)}
-          pageSizeOptions={rowsPerPageOptions}
-          disableRowSelectionOnClick
-          onRowClick={onRowClick}
-          sx={{ ...customStyles, ...sx }}
-        />
+<DataGrid
+  rows={filteredRows}
+  columns={columns}
+  getRowId={(row) => row.id}
+  pagination
+  paginationModel={paginationModel}                 // ← usa el estado
+  onPaginationModelChange={(m) => setPaginationModel(m)} // ← guarda page y pageSize
+  pageSizeOptions={rowsPerPageOptions}
+  disableRowSelectionOnClick
+  onRowClick={onRowClick}
+  sx={{ ...customStyles, ...sx }}
+/>
       </Box>
     </Box>
   );

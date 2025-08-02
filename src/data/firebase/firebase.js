@@ -1,6 +1,6 @@
 // src/data/firebase/firebase.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -15,3 +15,9 @@ console.log("📦 Firebase Project ID:", process.env.REACT_APP_FIREBASE_PROJECT_
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+
+// línea clave ↓  (hazla solo una vez al arrancar la app)
+enableIndexedDbPersistence(db).catch(() => {
+  /* Si hay otra pestaña abierta, la persistencia puede fallar;
+     no es crítico: Firestore seguirá funcionando sin caché. */
+});

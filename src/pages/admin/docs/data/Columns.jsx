@@ -1,15 +1,41 @@
-// Columns.js
+// src/pages/admin/docs/data/Columns.jsx
+import { Switch } from "@mui/material";
 
-export const Columns = (customActionsRenderer) => [
-  { field: 'numero', headerName: 'ID', width: 10 },
-  { field: 'titulo', headerName: 'Titulo', flex: 1 },
-  { field: 'estado', headerName: 'Estado', width: 130, sortable: false, filterable: false },
+/**
+ * Recibe:
+ *   onToggle(id, nuevoValor) → cambia “activo”
+ *   renderAcciones           → botones Editar / Borrar
+ */
+export const Columns = (onToggle, renderAcciones) => [
+  { field: "numero", headerName: "ID", width: 10 },
+  { field: "titulo", headerName: "Título", flex: 1 },
+
   {
-    field: 'acciones',
-    headerName: 'Acciones',
+    field: "activo",
+    headerName: "Activo",
+    width: 120,
+    sortable: false,
+    filterable: false,
+    renderCell: ({ row }) => (
+      <Switch
+        checked={!!row.activo}
+        /* ✋ 1) Detenemos el click que lanza onRowClick */
+        onClick={(e) => e.stopPropagation()}
+        /* ✋ 2) También detenemos la propagación del change */
+        onChange={(e) => {
+          e.stopPropagation();                          // <- clave
+          onToggle(row.firebaseId, e.target.checked);   // tu callback
+        }}
+      />
+    ),
+  },
+
+  {
+    field: "acciones",
+    headerName: "Acciones",
     width: 160,
     sortable: false,
     filterable: false,
-    renderCell: customActionsRenderer,
+    renderCell: renderAcciones,
   },
 ];

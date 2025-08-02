@@ -4,18 +4,17 @@ import {
 } from "@mui/material";
 import { Tabla2 }        from "../../../shared/components/tablas/tabla";
 import { Columns }       from "./data/Columns";
-import { useFormularios } from "../../../data/firebase/useFormularios";
 
 import EditIcon          from "@mui/icons-material/Edit";
 import DeleteIcon        from "@mui/icons-material/Delete";
 import IconActionButton  from "../../../shared/components/botones/Botones";
 import DocumentoModal    from "./components/modalCrearDocs/DocumentoModal";
-import { guardarDocumento, eliminarDocumento } from "../../../data/firebase/documentosService";
 import ModalEditDocs from "./components/modalEditDocs/ModalEditDocs";
+import { useDocuments } from "../../../hooks/useDocuments";
 
 const Documentos = () => {
   /* ── estado del modal ───────────── */
-  const { rows, loading, setRows } = useFormularios();
+  const { rows, loading, create, update, remove, toggleActivo } = useDocuments();
   const [openCreate, setOpenCreate] = useState(false);
   const handleOpen  = () => setOpenCreate(true);
   const handleClose = () => setOpenCreate(false);
@@ -23,25 +22,37 @@ const Documentos = () => {
   const [docSeleccionado, setDocSeleccionado] = useState(null);
   const handleSave = async (nuevoDoc) => {
     try {
-      console.log("📝 Documento a guardar:", nuevoDoc);
-      const idFirebase = await guardarDocumento(nuevoDoc);
-      console.log("✅ Guardado en Firebase correctamente");
-
-      const nuevoRow = {
-        id: idFirebase,
-        firebaseId: idFirebase,
-        numero: rows.length + 1,     // 👀 ID visible
-        ...nuevoDoc,
-        titulo: nuevoDoc.screenTitle,
-        estado: "Pendiente",
-      };
-
-      setRows((prev) => [...prev, nuevoRow]); // 👈 actualizar manualmente
-      handleClose();
+      await create({ ...nuevoDoc, titulo: nuevoDoc.screenTitle });
+      handleClose();            // cierra el modal
     } catch (err) {
       console.error("❌ Error al guardar documento:", err);
     }
   };
+
+  // ── Actualizar documento ────
+  const handleUpdate = async (docEditado) => {
+    try {
+      await update(docEditado.id, docEditado);
+
+      setOpenEdit(false);                 // cierra el modal
+    } catch (e) {
+      console.error("❌ Error al actualizar:", e);
+    }
+  };
+
+  // dentro de Documentos
+  const handleToggleActivo = (id, nuevoValor) => {
+    toggleActivo(id, nuevoValor).catch((err) =>
+      console.error("❌ Error al cambiar activo:", err)
+    );
+  };
+
+
+  /* ── Cli en el Row ─── */
+  const handleRowClick = useCallback((params) => {
+    setDocSeleccionado(params.row);
+    setOpenEdit(true);
+  }, []);
 
   /* ── botones de acción por fila ─── */
   const renderAcciones = useCallback(({ row }) => (
@@ -49,8 +60,9 @@ const Documentos = () => {
       <IconActionButton
         icon={<EditIcon fontSize="small" />}
         color="primary"
-        onClick={() => {
+        onClick={(e) => {
           console.log("✏️ Editando:", row); // Asegurate que ves todos los datos
+          e.stopPropagation(); 
           setDocSeleccionado(row);
           setOpenEdit(true);
         }}
@@ -58,13 +70,13 @@ const Documentos = () => {
       <IconActionButton
         icon={<DeleteIcon fontSize="small" />}
         color="error"
-        onClick={async () => {
+        onClick={async (e) => {
+          e.stopPropagation();
           const confirm = window.confirm(`¿Eliminar "${row.titulo}"?`);
           if (!confirm) return;
-
+            await remove(row.id);
           try {
-            await eliminarDocumento(row.firebaseId); // ⬅️ ID generado por vos
-            setRows((prev) => prev.filter((item) => item.firebaseId !== row.firebaseId));
+            
           } catch (err) {
             console.error("❌ Error al eliminar:", err);
           }
@@ -73,7 +85,7 @@ const Documentos = () => {
     </Stack>
   ), []);
 
-  const columns = Columns(renderAcciones);
+  const columns = Columns(handleToggleActivo, renderAcciones);
 
   /* ── UI ─────────────────────────── */
   return (
@@ -100,11 +112,12 @@ const Documentos = () => {
           rows={rows}
           columns={columns}
           height="51vh"
-          pageSize={6}
+          pageSize={10}
           loading={loading}
           showButton
           buttonLabel="Crear documento"
           onButtonClick={handleOpen}
+          onRowClick={handleRowClick}
         />
       </Paper>
 
@@ -118,6 +131,7 @@ const Documentos = () => {
         open={openEdit}
         onClose={() => setOpenEdit(false)}
         documento={docSeleccionado}
+        onSave={handleUpdate}
       />
     </>
   );

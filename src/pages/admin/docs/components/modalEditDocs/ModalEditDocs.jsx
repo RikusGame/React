@@ -48,6 +48,7 @@ const ModalEditDocs = ({ open, onClose, documento, onSave }) => {
       screenSubtitle: subtitulo,
       inputs,
       fileSections,
+      titulo: titulo,
     });
     onClose();
   };
