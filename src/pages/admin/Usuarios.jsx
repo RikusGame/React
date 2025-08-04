@@ -1,5 +1,4 @@
-// src/pages/admin/Usuarios.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   Paper,
@@ -15,7 +14,6 @@ import {
   Tooltip,
   TextField,
   InputAdornment,
-  Box,
   Button,
 } from "@mui/material";
 import {
@@ -26,112 +24,53 @@ import {
   Search as SearchIcon,
 } from "@mui/icons-material";
 
-// Datos de ejemplo para usuarios
-const initialUsers = [
-  {
-    id: 'user1',
-    name: "Ana García",
-    email: "ana.garcia@example.com",
-    role: "Administrador",
-    status: "Activo",
-    avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-  },
-  {
-    id: 'user2',
-    name: "Luis Pérez",
-    email: "luis.perez@example.com",
-    role: "Editor",
-    status: "Activo",
-    avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-  },
-  {
-    id: 'user3',
-    name: "María López",
-    email: "maria.lopez@example.com",
-    role: "Usuario",
-    status: "Inactivo",
-    avatar: "https://randomuser.me/api/portraits/women/3.jpg",
-  },
-  {
-    id: 'user4',
-    name: "Carlos Ruiz",
-    email: "carlos.ruiz@example.com",
-    role: "Usuario",
-    status: "Activo",
-    avatar: "https://randomuser.me/api/portraits/men/4.jpg",
-  },
-  {
-    id: 'user5',
-    name: "Elena Fernández",
-    email: "elena.f@example.com",
-    role: "Usuario",
-    status: "Activo",
-    avatar: "https://randomuser.me/api/portraits/women/5.jpg",
-  },
-  {
-    id: 'user6',
-    name: "Javier Sánchez",
-    email: "javier.s@example.com",
-    role: "Editor",
-    status: "Activo",
-    avatar: "https://randomuser.me/api/portraits/men/6.jpg",
-  },
-    {
-    id: 'user7',
-    name: "Sofía Torres",
-    email: "sofia.t@example.com",
-    role: "Usuario",
-    status: "Inactivo",
-    avatar: "https://randomuser.me/api/portraits/women/7.jpg",
-  },
-  {
-    id: 'user8',
-    name: "Diego Castro",
-    email: "diego.c@example.com",
-    role: "Administrador",
-    status: "Activo",
-    avatar: "https://randomuser.me/api/portraits/men/8.jpg",
-  },
-];
+import userService from '../../db/services/userService'; // ✅ backend desacoplado
 
-const Usuarios = () => { // <--- Nombre del componente cambiado aquí
+const Usuarios = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
 
-  // Función para manejar la búsqueda
+  useEffect(() => {
+    userService.fetchAll().then(setUsers).catch(console.error);
+  }, []);
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  // Filtrar usuarios basado en el término de búsqueda
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // --- Funciones de acción (simuladas) ---
   const handleView = (user) => {
     alert(`Ver detalles de: ${user.name} (ID: ${user.id})`);
-    // Aquí podrías navegar a una página de detalle de usuario o abrir un modal
   };
 
   const handleEdit = (user) => {
     alert(`Editar usuario: ${user.name} (ID: ${user.id})`);
-    // Aquí podrías navegar a un formulario de edición o abrir un modal
   };
 
-  const handleDelete = (userId) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar al usuario con ID: ${userId}?`)) {
+  const handleDelete = async (userId) => {
+    if (window.confirm(`¿Eliminar al usuario con ID: ${userId}?`)) {
+      await userService.delete(userId);
       setUsers(users.filter(user => user.id !== userId));
-      alert(`Usuario con ID ${userId} eliminado.`);
-      // En una aplicación real, aquí harías una llamada a tu API para eliminar al usuario.
     }
   };
 
-  const handleAddUser = () => {
-    alert("Navegar a la página para añadir un nuevo usuario.");
-    // Aquí podrías navegar a un formulario para crear un nuevo usuario.
+  const handleAddUser = async () => {
+    const name = prompt('Nombre completo');
+    const email = prompt('Email');
+    const role = prompt('Rol (Administrador, Editor, Usuario)');
+    const status = prompt('Estado (Activo, Inactivo)');
+    const avatar = prompt('URL del avatar');
+
+    if (!name || !email) return alert('Nombre y email son obligatorios');
+
+    const newUser = { name, email, role, status, avatar };
+    const savedUser = await userService.create(newUser);
+    setUsers([...users, savedUser]);
   };
 
   return (
@@ -146,7 +85,6 @@ const Usuarios = () => { // <--- Nombre del componente cambiado aquí
           </Typography>
         </Grid>
         <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 2 }}>
-          {/* Barra de Búsqueda */}
           <TextField
             label="Buscar usuario"
             variant="outlined"
@@ -162,7 +100,6 @@ const Usuarios = () => { // <--- Nombre del componente cambiado aquí
             }}
             sx={{ flexGrow: 1, maxWidth: 300 }}
           />
-          {/* Botón para Añadir Nuevo Usuario */}
           <Button
             variant="contained"
             color="primary"
@@ -202,47 +139,11 @@ const Usuarios = () => { // <--- Nombre del componente cambiado aquí
                   key={user.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: 'action.hover' } }}
                 >
-                  <TableCell component="th" scope="row">
-                    <Avatar alt={user.name} src={user.avatar} />
-                  </TableCell>
+                  <TableCell><Avatar alt={user.name} src={user.avatar} /></TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        display: 'inline-block',
-                        p: '4px 8px',
-                        borderRadius: '4px',
-                        fontWeight: 'bold',
-                        backgroundColor:
-                          user.role === 'Administrador' ? '#ffe0b2' :
-                          user.role === 'Editor' ? '#c8e6c9' :
-                          '#bbdefb',
-                        color:
-                          user.role === 'Administrador' ? '#e65100' :
-                          user.role === 'Editor' ? '#2e7d32' :
-                          '#1976d2',
-                      }}
-                    >
-                      {user.role}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        display: 'inline-block',
-                        p: '4px 8px',
-                        borderRadius: '4px',
-                        fontWeight: 'bold',
-                        backgroundColor: user.status === 'Activo' ? '#e8f5e9' : '#ffebee',
-                        color: user.status === 'Activo' ? '#2e7d32' : '#d32f2f',
-                      }}
-                    >
-                      {user.status}
-                    </Typography>
-                  </TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.status}</TableCell>
                   <TableCell align="right">
                     <Tooltip title="Ver Detalles">
                       <IconButton color="info" onClick={() => handleView(user)}>
@@ -270,4 +171,4 @@ const Usuarios = () => { // <--- Nombre del componente cambiado aquí
   );
 };
 
-export default Usuarios; // <--- Exportación del componente cambiada aquí
+export default Usuarios;
