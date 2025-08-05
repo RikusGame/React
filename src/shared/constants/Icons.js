@@ -25,6 +25,7 @@ import Person from "@mui/icons-material/Person";           // 👤 Usuario
 import Logout from "@mui/icons-material/Logout";           // 🚪 Cerrar sesión
 import CalendarToday from "@mui/icons-material/CalendarToday"; // 📅 Calendario
 import Home from "@mui/icons-material/Home";               // 🏠 Inicio / Dashboard
+import PhotoCamera from "@mui/icons-material/PhotoCamera"; // 📸 Cámara / Foto
 
 // Objeto de íconos
 const Icons = {
@@ -50,12 +51,13 @@ const Icons = {
   Logout: Logout,                   // 🚪 Cerrar sesión
   Calendar: CalendarToday,          // 📅 Calendario
   Home: Home,                       // 🏠 Inicio / Dashboard
+  Camera: PhotoCamera,              // 📸 Cámara / Foto
 };
 
 export default Icons;
 
 /* Ejemplo de uso:
-icon: <Icons.save />
+icon: <Icons.Camera />
 iconoDerecho: Icons.check
 iconoIzquierdo: Icons.add
 */

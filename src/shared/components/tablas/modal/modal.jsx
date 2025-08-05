@@ -13,7 +13,7 @@ const CustomModal = ({
     color: "#fff",
     textTransform: "none",
     borderRadius: 2,
-    px: 3,
+    px: 2,
     "&:hover": { backgroundColor: "#115293" },
   };
 
@@ -22,7 +22,15 @@ const CustomModal = ({
   const rightButtons = footerButtons.filter(btn => btn.position !== "left");
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose}
+      /* 👇 desenfoque + oscurecido del fondo */
+      BackdropProps={{
+        sx: {
+          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(0,0,0,0.3)",  // opcional, quita si no quieres tinte
+        },
+      }}
+    >
       <Box
         sx={{
           position: "absolute",
@@ -92,3 +100,18 @@ const CustomModal = ({
 };
 
 export default CustomModal;
+
+/* Ejemplo de uso:
+<CustomModal
+  open={modalOpen}
+  onClose={() => setModalOpen(false)}
+  title="Título del Modal"
+  footerButtons={[
+    { label: "Cancelar", onClick: () => setModalOpen(false), position: "left" },
+    { label: "Guardar", onClick: handleSave, position: "right" },
+    { icon: <SomeIcon />, onClick: handleIconAction, position: "right" },
+  ]}
+>
+  <Typography>Contenido del modal...</Typography>
+</CustomModal>
+*/

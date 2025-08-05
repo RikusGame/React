@@ -205,46 +205,36 @@ const estiloSoloIcono = {
 import { useCallback } from "react";
 import { Typography, Paper, Stack, Box } from "@mui/material";
 
-const MiModal = ({ onClose }) => (
-  <Box>
-    <h2>Hola desde el modal</h2>
-    <p>Contenido dinámico aquí</p>
-  </Box>
-);
-
 <Tabla3
-  rows={Rows}
+  rows={rows}
   columns={columns}
-  height="51vh"
   pageSize={3}
+  onRowClick={(row, openModal) =>
+    openModal({
+      title: "Editar banner",
+      renderModal: () => <Box>Editar ID: {row.id}</Box>,
+      footerButtons: (close) => [
+        { label: "Cerrar", position: "left", onClick: close },
+        { label: "Guardar", icon: <Icons.Save />, position: "right", onClick: () => alert("Guardado") },
+      ],
+    })
+  }
   buttons={[
     {
       label: "Agregar",
       icon: <Icons.Add />,
       title: "Agregar nuevo banner",
-      renderModal: MiModal, // ← el botón abrirá este modal
-      botonCerrar: true, // Boton Cerrar visible
+      renderModal: () => <Box>Contenido del modal</Box>,
       footerButtons: (close) => [
-        {
-          label: "Cerrar",
-          //icon: <Icons.Close />,
-          position: "left", // posición izquierda
-          onClick: close,
-        },
-        {
-          label: "Guardar",
-          icon: <Icons.Save />,
-          onClick: () => alert("Guardado"),
-          position: "right",
-        },
+        { label: "Cerrar", position: "left", onClick: close },
+        { label: "Guardar", icon: <Icons.Save />, position: "right", onClick: () => alert("Guardado") },
       ],
     },
     {
-      //label: "Exportar",
+      label: "Exportar",
       icon: <Icons.Download />,
       onClick: () => console.log("Exportar"),
     },
   ]}
-  onRowClick={(row) => console.log("Row Clickeado", row)}
 />
 */
