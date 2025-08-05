@@ -1,35 +1,41 @@
 // src/pages/admin/banner/Banners.jsx
-import { useCallback } from "react";
-import { Typography, Paper, Stack } from "@mui/material";
-import { Tabla2 } from "../../../shared/components/tablas/tabla";
-import { Columns } from "./data/Columns";
-import { Rows } from "./data/Rows";
-//import Button from "@mui/material/Button";
-//import Stack  from "@mui/material/Stack";
+import React, { useCallback } from "react";
+import { Typography, Paper, Stack, Box, CircularProgress, Alert } from "@mui/material";
+import { Tabla3 } from "../../../shared/components/tablas/tabla3";
 import EditIcon   from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconActionButton from "../../../shared/components/botones/Botones";
+import Icons from "../../../shared/constants/Icons";
+import { Rows as initialRows } from "./data/Rows";
+import { crearColumns } from "../../../shared/components/tablas/data/columnPlantillas";
+import { useRows } from "../../../hooks/useRows";
+
+const USE_MOCK = true;          // ← así forzamos los datos locales
 
 const Banners = () => {
-  /* Si necesitas acciones en la tabla (editar, eliminar, etc.) */
+  /* ---------- datos ---------- */
+  const { rows, setRows, loading, error } = useRows(USE_MOCK);
+
+  const handleEstadoChange = (row, newEstado) => {
+    setRows((prev) =>
+      prev.map((r) => (r.id === row.id ? { ...r, estado: newEstado } : r))
+    );
+  };
+
   const renderAcciones = useCallback(
     (params) => {
       const row = params.row;
-
-      const handleEdit   = () => console.log("Editar",   row.id);
-      const handleDelete = () => console.log("Eliminar", row.id);
-
       return (
         <Stack direction="row" spacing={1}>
           <IconActionButton
             icon={<EditIcon fontSize="small" />}
             color="primary"
-            onClick={handleEdit}        // <-- acción definida aquí
+            onClick={(e) => { e.stopPropagation(); console.log("Editar", row.id); }}
           />
           <IconActionButton
             icon={<DeleteIcon fontSize="small" />}
             color="error"
-            onClick={handleDelete}      // <-- otra acción
+            onClick={(e) => { e.stopPropagation(); console.log("Eliminar", row.id); }}
           />
         </Stack>
       );
@@ -37,42 +43,109 @@ const Banners = () => {
     []
   );
 
-  // ¡Ahora sí usamos Columns!
-  const columns = Columns(renderAcciones);
+  /* ---------- columnas ---------- */
+  // Banners.jsx  ──────────────────────────────────────────────
+  const columnConfig = {
+    id: {
+      label: "ID",
+      width: 10,          // ← ancho fijo
+    },
+    imagen: {
+      label: "Imagen",
+      flex: 1,            // ← ocupa espacio flexible
+    },
+    posicion: {
+      label: "Posición",
+      width: 40,
+    },
+    estado: {
+      label: "Estado",
+      width: 140,
+    },
+    acciones: {
+      label: "Acciones",
+      width: 140,
+    },
+  };
+
+  // Orden (si quieres cambiarlo basta con re‐ordenar el array):
+  const fields = ["id", "imagen", "posicion", "estado", "acciones"];
+
+
+  const columns = React.useMemo(
+    () =>
+      crearColumns({
+        fields,                // orden
+        config: columnConfig,  // overrides individuales
+        onEstado: handleEstadoChange,
+        renderAcciones,
+      }),
+    [fields, columnConfig, handleEstadoChange, renderAcciones]
+  );
+
+  const Agregar = ({ onClose }) => (
+    <Box>
+      <h2>Hola desde el modal</h2>
+      <p>Contenido dinámico aquí</p>
+    </Box>
+  );
+
+  const editarModal = (titulo, row) => ({
+    title: titulo,
+    renderModal: ({ onClose }) => (
+      <Box>
+        <h2>{titulo}</h2>
+        <p>ID seleccionado: {row.id}</p>
+      </Box>
+    ),
+    footerButtons: (close) => [
+      {
+        label: "Cerrar",
+        position: "left",
+        onClick: close,
+      },
+      {
+        label: "Guardar",
+        icon: <Icons.Save />,
+        onClick: () => alert("Guardado"),
+        position: "right",
+      },
+    ],
+  });
+
+  if (loading) return <CircularProgress />;
+  if (error)   return <Alert severity="error">{error.message}</Alert>;
 
   return (
-    <Paper
-      elevation={6}
-      sx={{
-        p: 3,
-        borderRadius: 3,
-        backgroundColor: "#f9f9f9",
-        mx: "auto",
-        maxWidth: 1200,
-        border: "0.1px solid rgba(146, 144, 144, 1)",
-      }}
-    >
-      <Typography variant="h4" gutterBottom fontWeight="bold">
+    <Paper elevation={6} sx={{ p: 3, borderRadius: 3, maxWidth: 1200, mx: "auto" }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>
         Banners
       </Typography>
-      <Typography color="text.secondary" mb={2}>
-        Aquí puedes gestionar los banners del sistema: ver, crear, editar o
-        eliminar.
-      </Typography>
 
-      {/* Tabla lista */}
-      <Tabla2
-        rows={Rows}
+      <Tabla3
+        rows={rows}
         columns={columns}
-        height={"51vh"}
         pageSize={3}
-        showButton
-        buttonLabel="Agregar banner"
-        onButtonClick={() => {console.log("Crear banner");}}
-        onRowClick={() => console.log("Row Clickeado")}
+        onRowClick={(row, openModal) =>
+          openModal({
+            title: "Editar banner",
+            renderModal: () => <Box>Editar ID: {row.id}</Box>,
+          })
+        }
+        buttons={[
+          {
+            label: "Agregar",
+            icon: <Icons.Add />,
+            title: "Agregar nuevo banner",
+            renderModal: () => <Box>Contenido del modal</Box>,
+            footerButtons: (close) => [
+              { label: "Cerrar", position: "left", onClick: close },
+              { label: "Guardar", icon: <Icons.Save />, position: "right", onClick: () => alert("Guardado") },
+            ],
+          },
+        ]}
       />
     </Paper>
   );
 };
-
 export default Banners;
