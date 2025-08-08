@@ -1,11 +1,16 @@
 // src/pages/admin/banner/components/ModalAgregar.jsx
 
+import { useEffect } from "react";
 import { Box, Typography, Stack } from "@mui/material";
 import Icons from "../../../../shared/constants/Icons";
 import useSubirImg from "../../../../shared/hook/images/SubirImg";
 
-const ModalAgregar = () => {
-  const { preview, inputRef, abrirSelector, onChangeInput } = useSubirImg();
+const ModalAgregar = ({ onFileSelected }) => {
+  const { file, preview, inputRef, abrirSelector, onChangeInput } = useSubirImg();
+
+  useEffect(() => {
+    onFileSelected?.(file);                       // 👈 notifica al padre
+  }, [file, onFileSelected]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>

@@ -4,25 +4,39 @@ import { Tabla3 } from "../../../shared/components/tablas/tabla3";
 import Icons from "../../../shared/constants/Icons";
 import { useRows } from "../../../hooks/useRows";
 import { Typography, Paper, Box, CircularProgress, Alert } from "@mui/material";
-import useBannerColumns from "./data/Columnas";
+// ❌ quita: import useBannerColumns from "./data/Columnas";
 import ModalAgregar from "./components/ModalAgregar";
+import useColumns from "../../../shared/components/tablas/columna/hooks/useColumns";
+import { uploadImage } from "../../../data/firebase/uploadImage";
 
-const USE_MOCK = true;          // ← así forzamos los datos locales
+const USE_MOCK = true;
 
 const Banners = () => {
-  /* ---------- datos ---------- */
   const { rows, setRows, loading, error } = useRows(USE_MOCK);
+  const pendingFileRef = React.useRef(null);  // 👈 aquí guardamos el file
 
-  // 1️⃣  Solo se crea una vez
   const handleEstadoChange = React.useCallback((row, newEstado) => {
     setRows(prev => prev.map(r => (r.id === row.id ? { ...r, estado: newEstado } : r)));
   }, [setRows]);
 
-  /* ---------- columnas ---------- */
-  const columns = useBannerColumns(handleEstadoChange); 
+  // 👇 ahora SÓLO usamos useColumns
+  const columns = useColumns(
+    ["id", "imagen", "estado", "acciones"], // puedes agregar más luego: ["id","imagen","posicion","estado","acciones"]
+    {
+      estado: {
+        onChange: handleEstadoChange,          // ← tu handler
+      },
+      acciones: {
+        buttons: ["editar", "eliminar", "ver"],
+        handlers: {
+          editar:  (row) => console.log("EDITAR banner", row),
+          eliminar: (row) => console.log("ELIMINAR banner", row),
+          ver:     (row) => console.log("VER banner", row),
+        },
+      },
+    }
+  );
 
-
-  /* ---------- render ---------- */
   if (loading) return <CircularProgress />;
   if (error)   return <Alert severity="error">{error.message}</Alert>;
 
@@ -51,16 +65,43 @@ const Banners = () => {
             label: "Agregar",
             icon: <Icons.Add />,
             title: "Agregar nuevo banner",
-            renderModal: () => <ModalAgregar />,
+            // ⬇️ conectamos el modal con onFileSelected
+            renderModal: () => (
+              <ModalAgregar onFileSelected={(f) => (pendingFileRef.current = f)} />
+            ),
             footerButtons: (close) => [
-              { label: "Cerrar", position: "left", onClick: close },
-              { label: "Guardar", icon: <Icons.Save />, position: "right", onClick: () => alert("Guardado") },
+              { label: "Cerrar", position: "left", onClick: () => { pendingFileRef.current = null; close(); } },
+              {
+                label: "Guardar",
+                icon: <Icons.Save />,
+                position: "right",
+                onClick: async () => {
+                  try {
+                    const file = pendingFileRef.current;
+                    if (!file) {
+                      alert("Primero selecciona una imagen.");
+                      return;
+                    }
+                    // 1) subir a Storage
+                    const { url } = await uploadImage(file, "banners");
+                    // 2) guardar en tu backend o estado local
+                    if (USE_MOCK) {
+                      // mock local: agrega una fila nueva
+                      const newId = (rows.at(-1)?.id ?? 0) + 1;
+                      setRows(prev => [...prev, { id: newId, imagen: url, estado: true }]);
+                    } else {
+                      // TODO: acá llamarías a tu repo de Firestore de Banners, ejemplo:
+                      // await bannersRepo.create({ imagen: url, estado: true, posicion: ..., ... })
+                    }
+                    pendingFileRef.current = null;
+                    close();
+                  } catch (err) {
+                    console.error(err);
+                    alert("Error subiendo imagen");
+                  }
+                },
+              },
             ],
-          },
-          {
-            label: "Exportar",
-            icon: <Icons.Download />,
-            onClick: () => console.log("Exportar"),
           },
         ]}
       />
